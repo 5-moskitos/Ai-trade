@@ -21,7 +21,6 @@ def stocklist():
 
     try:
         data = get_all_stock_data("nifty50")
-        print(data)
         return render_template("home/" + "stocklist.html", data=data)
 
     except TemplateNotFound:

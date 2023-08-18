@@ -4,7 +4,7 @@ from flask_login import UserMixin
 from apps import db, login_manager
 from datetime import datetime
 from apps.authentication.util import hash_pass
-
+from ..home.models import Transaction
 class Users(db.Model, UserMixin):
 
     __tablename__ = 'Users'
