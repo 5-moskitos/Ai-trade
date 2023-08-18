@@ -15,13 +15,13 @@ def index():
 
     return render_template('home/index.html', segment='index')
 
-@blueprint.route('/stocklist')
+@blueprint.route('/stocklist/nifty50')
 @login_required
-def stocklist():
+def stocklistn50():
 
     try:
         data = get_all_stock_data("nifty50")
-        return render_template("home/" + "stocklist.html", data=data)
+        return render_template("home/" + "stocklist.html", data=data, category="Nifty50")
 
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404
@@ -29,6 +29,40 @@ def stocklist():
     except Exception as e:
         print("here ", e)
         return render_template('home/page-500.html'), 500
+
+
+@blueprint.route('/stocklist/midCap')
+@login_required
+def stocklistmc():
+
+    try:
+        data = get_all_stock_data("midCap")
+        return render_template("home/" + "stocklist.html", data=data, category="Mid Cap")
+
+    except TemplateNotFound:
+        return render_template('home/page-404.html'), 404
+
+    except Exception as e:
+        print("here ", e)
+        return render_template('home/page-500.html'), 500
+
+
+
+@blueprint.route('/stocklist/smallCap')
+@login_required
+def stocklistsc():
+
+    try:
+        data = get_all_stock_data("smallCap")
+        return render_template("home/" + "stocklist.html", data=data, category="Small Cap")
+
+    except TemplateNotFound:
+        return render_template('home/page-404.html'), 404
+
+    except Exception as e:
+        print("here ", e)
+        return render_template('home/page-500.html'), 500
+
 
 
 @blueprint.route('/<template>')

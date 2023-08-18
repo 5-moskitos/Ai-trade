@@ -41,6 +41,5 @@ def get_all_stock_data(category):
         
 
     data = [json.loads(get_stock_data(stock)) for stock in stock_names]
-    print(data)
     return data
 
