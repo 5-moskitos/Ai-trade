@@ -31,12 +31,6 @@ class CreateAccountForm(FlaskForm):
     phone_no = StringField('Phone_Number',id='Phone_Number', validators=[DataRequired()])
     current_balance= StringField('current_balance', id='current_balance')
     
-class Transaction(FlaskForm):
-    transaction_id=StringField('tran_id',id='tran_id',validators=[DataRequired()])
-    date_time =  StringField('dateTime', id='date_time', validators=[DataRequired()])
-    Stock_name = StringField('Stock_Name', id='stockname', validators=[DataRequired()])
-    buySell = StringField('BuySell',id='buysell', validators=[DataRequired()])
-    Price = StringField('price',id='price',validators=[DataRequired()])
-    quantity= StringField('quantity',id='quantity',validators=[DataRequired()]) 
+
 
     

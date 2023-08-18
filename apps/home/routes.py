@@ -4,11 +4,14 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from apps.home import blueprint
-from flask import render_template, request
+from flask import render_template, request,session
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 from .utils import get_all_stock_data
-
+from .form import AddMoney,WithdrawMoney
+from flask_login import current_user
+from apps.authentication.models import Users
+from apps import db
 @blueprint.route('/index')
 @login_required
 def index():
@@ -63,7 +66,22 @@ def stocklistsc():
         print("here ", e)
         return render_template('home/page-500.html'), 500
 
+@blueprint.route('/wallet', methods=['POST','GET'])
+# @login_required
+def wallet():
+    add_money = AddMoney(request.form)
+    print(request.form)
+    if 'moneytoadd' in request.form:
+        money = request.form["moneytoadd"]
+        user_id = session["user_id"]
+        username = session["user_name"]
+        print(f"money : {money}, {user_id}, {username}")
+        user = Users.query.filter_by(id=user_id).first()
+        print(f"user :{user} , {type(user)} , {user.current_balance}")
+        user.current_balance+= int(money)
+        db.session.commit()
 
+    return render_template("home/wallet.html",form=add_money)
 
 @blueprint.route('/<template>')
 @login_required
