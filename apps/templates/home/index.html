@@ -6,6 +6,7 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Header -->
     <div class="header bg-primary pb-6">
@@ -174,8 +175,7 @@
             </div>
             <div class="card-body">
               <!-- Chart -->
-              <div class="chart">
-                <canvas id="chart-bars" class="chart-canvas"></canvas>
+              <canvas id="stockChart" width="600" height="600"></canvas>
               </div>
             </div>
           </div>
@@ -413,5 +413,19 @@
 
   <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
   <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
-
+  
+  <script>
+    // Sample stock data
+    var ctx = document.getElementById('stockChart').getContext('2d');
+    var pieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Category A', 'Category B', 'Category C', 'Category D'],
+                datasets: [{
+                    data: [60,43,56,78],
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50']
+                }]
+            }
+        });
+</script>
 {% endblock javascripts %}

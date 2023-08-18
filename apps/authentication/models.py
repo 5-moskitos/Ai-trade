@@ -1,8 +1,4 @@
 # -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
-
 from flask_login import UserMixin
 
 from apps import db, login_manager
@@ -60,4 +56,6 @@ class Transaction(db.Model):
     buySell = db.Column(db.Integer,nullable=False)
     Price = db.Column(db.Integer,nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
+
+
 
