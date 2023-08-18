@@ -60,3 +60,4 @@ class Transaction(db.Model):
     buySell = db.Column(db.Integer,nullable=False)
     Price = db.Column(db.Integer,nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
+

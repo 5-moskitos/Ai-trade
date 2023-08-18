@@ -1,0 +1,208 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Profile {% endblock title %}
+
+{% block content %}
+
+<div class="header pb-6 d-flex align-items-center" 
+     style="min-height: 300px; background-image: url(/static/assets/img/theme/profile-cover.jpg); background-size: cover; background-position: center top;">
+  <!-- Mask -->
+  <span class="mask bg-gradient-default opacity-8"></span>
+  <!-- Header container -->
+  <div class="col-xl-4 align-items-center py-4"></div>
+  <div class="col-xl-3 col-md-6">
+    <div class="card card-stats">
+        <!-- Card body -->
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <h5 class="card-title text-uppercase text-muted mb-0">Account Balance</h5>
+              <span class="h2 font-weight-bold mb-0">Rs. 2,356</span>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+  <div class="row align-items-center py-4">
+    <div class="col align-items-center py-4">
+      <a href="#" class="btn btn-primary btn-neutral">Add Money</a>
+      <a href="#" class="btn btn-primary btn-neutral">Withdraw</a>
+    </div>
+  </div>
+
+</div>
+<!-- Page content -->
+<br>
+<div class="row">
+  <div class="col">
+    <div class="card bg-default shadow">
+      <div class="card-header bg-transparent border-0">
+        <h3 class="text-white mb-0">Transaction History</h3>
+      </div>
+      <div class="table-responsive">
+        <table class="table align-items-center table-dark table-flush">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">Stock</th>
+              <th scope="col">Buy/Sell</th>
+              <th scope="col">Price</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Date and Time</th>
+              <th scope="col"> Transaction_ID</th>
+            </tr>
+          </thead>
+          <tbody class="list">
+            <tr>
+              <th scope="row">
+                <div class="media align-items-center">
+                  <div class="media-body">
+                    <span class="name mb-0 text-sm">TATA STEEL</span>
+                  </div>
+                </div>
+              </th>
+              <td class="budget">
+                Buy
+              </td>
+              <td>
+                <span class="badge badge-dot mr-4">
+                  <i class="bg-warning"></i>
+                  <span class="status">Rs.34.55</span>
+                </span>
+              </td>
+              <td class="budget">
+               3
+              </td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <span>27-12-22 12:30:41</span>
+                </div>
+                <td class="budget">
+                  3237543853248
+                 </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                <div class="media align-items-center">
+                  <div class="media-body">
+                    <span class="name mb-0 text-sm">ADANIENT</span>
+                  </div>
+                </div>
+              </th>
+              <td class="budget">
+                Buy
+              </td>
+              <td>
+                <span class="badge badge-dot mr-4">
+                  <i class="bg-warning"></i>
+                  <span class="status">Rs.2563.1</span>
+                </span>
+              </td>
+              <td class="budget">
+               3
+              </td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <span>29-12-22 12:30:41</span>
+                </div>
+                <td class="budget">
+                  5346532464
+                 </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                <div class="media align-items-center">
+                  <div class="media-body">
+                    <span class="name mb-0 text-sm">EICHERMOT</span>
+                  </div>
+                </div>
+              </th>
+              <td class="budget">
+                Buy
+              </td>
+              <td>
+                <span class="badge badge-dot mr-4">
+                  <i class="bg-warning"></i>
+                  <span class="status">Rs.3338.65</span>
+                </span>
+              </td>
+              <td class="budget">
+               1
+              </td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <span>12-01-23 12:30:41</span>
+                </div>
+                <td class="budget">
+                  45634634634
+                 </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                <div class="media align-items-center">
+                  <div class="media-body">
+                    <span class="name mb-0 text-sm">ADANIENT</span>
+                  </div>
+                </div>
+              </th>
+              <td class="budget">
+                Sell
+              </td>
+              <td>
+                <span class="badge badge-dot mr-4">
+                  <i class="bg-warning"></i>
+                  <span class="status">Rs.2610.56</span>
+                </span>
+              </td>
+              <td class="budget">
+               2
+              </td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <span>27-12-22 12:30:41</span>
+                </div>
+                <td class="budget">
+                  3243542554
+                 </td>
+            </tr>
+            <tr>
+              <th scope="row">
+                <div class="media align-items-center">
+                  <div class="media-body">
+                    <span class="name mb-0 text-sm">AXISBANK</span>
+                  </div>
+                </div>
+              </th>
+              <td class="budget">
+                Buy
+              </td>
+              <td>
+                <span class="badge badge-dot mr-4">
+                  <i class="bg-warning"></i>
+                  <span class="status">Rs.942.3</span>
+                </span>
+              </td>
+              <td class="budget">
+               6
+              </td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <span>12-01-23 2 12:30:41</span>
+                </div>
+                <td class="budget">
+                  428376423243
+                 </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Card body -->
+
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}{% endblock javascripts %}
