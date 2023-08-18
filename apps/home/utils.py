@@ -33,7 +33,7 @@ def get_stock_data(stock_name):
 
 
 def get_all_stock_data(category):
-    with open('/media/aftab/Work/Ai-trade/apps/stocks.json', 'r') as fp:
+    with open('apps/stocks.json', 'r') as fp:
         stock_names = json.load(fp)
     
     stock_names = stock_names[category]
