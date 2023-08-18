@@ -8,7 +8,7 @@ from flask_login import UserMixin
 from apps import db, login_manager
 from datetime import datetime
 from apps.authentication.util import hash_pass
-
+from ..home.models import Transaction
 class Users(db.Model, UserMixin):
 
     __tablename__ = 'Users'
@@ -49,15 +49,4 @@ def request_loader(request):
     user = Users.query.filter_by(username=username).first()
     return user if user else None
 
-
-class Transaction(db.Model):
-    __tablename__ = 'Transaction'
-
-    uid=db.Column(db.Integer,db.ForeignKey('Users.id'),nullable=False)
-    tran_id = db.Column(db.Integer, primary_key=True)
-    date_time = db.Column(db.DateTime, nullable=False)
-    Stock_name = db.Column(db.String(64),nullable=False)
-    buySell = db.Column(db.Integer,nullable=False)
-    Price = db.Column(db.Integer,nullable=False)
-    quantity = db.Column(db.Integer, nullable=False)
 
