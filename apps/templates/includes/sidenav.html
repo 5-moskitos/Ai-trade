@@ -23,11 +23,26 @@
               <span class="nav-link-text">Dahsboard</span>
             </a>
           </li>
+
           <li class="nav-item">
-            <a class="nav-link {% if 'map' in segment %} active {% endif %}" href="/map.html">
-              <i class="ni ni-pin-3 text-primary"></i>
-              <span class="nav-link-text">Stock List</span>
-            </a>
+            <div class="dropdown" style="width: auto;">
+              <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="ni ni-pin-3 text-primary"></i>
+                <span class="nav-link-text">Stock List</span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow" style="margin-top: 20px;">
+                <ul class="navbar-nav">
+                  <li class="nav-link">
+                    <a class="nav-link {% if 'map' in segment %} active {% endif %}" href="/stocklist">
+                      <i class="ni ni-pin-3 text-primary"></i>
+                      <span class="nav-link-text">Nifty 50</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+           
+            
           </li>
           <li class="nav-item">
             <a class="nav-link {% if 'tabels' in segment %} active {% endif %}" href="/tables.html">
