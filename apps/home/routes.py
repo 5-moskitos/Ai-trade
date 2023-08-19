@@ -75,6 +75,7 @@ def stocklistsc():
 def wallet():
     add_money = AddMoney(request.form)
     withdraw_money = WithdrawMoney(request.form)
+
     if 'moneytoadd' in request.form:
         money = request.form["moneytoadd"]
         user_id = session["user_id"]
@@ -84,6 +85,19 @@ def wallet():
         print(f"user :{user} , {type(user)} , {user.current_balance}")
         user.current_balance+= int(money)
         db.session.commit()
+
+    if 'withdraw' in request.form:
+        money = request.form["moneytowithdraw"]
+        user_id = session["user_id"]
+        username = session["user_name"]
+        print(f"money : {money}, {user_id}, {username}")
+        user = Users.query.filter_by(id=user_id).first()
+        print(f"user :{user} , {type(user)} , {user.current_balance}")
+        if user.current_balance >= int(money):
+            user.current_balance -= int(money)
+            db.session.commit()
+        else:
+            flash("Insufficient balance for withdrawal.", "error")
 
     return render_template("home/wallet.html",add_form=add_money, withdraw_form=withdraw_money)
 
