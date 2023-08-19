@@ -47,7 +47,8 @@ def get_all_stock_data(category):
     data = [json.loads(get_stock_data(stock)) for stock in stock_names]
     return data
 
-
+def get_profit_data(stock_cap):
+    pass
 
 def make_trade(username, amount, duration, stock_cap="nifty50"):
     user = Users.query.filter_by(username=username).first()
