@@ -1,4 +1,5 @@
 alembic==1.11.3
+apscheduler-3.10.3 
 bcrypt==4.0.1
 beautifulsoup4==4.12.2
 blinker==1.6.2
@@ -36,6 +37,7 @@ svgwrite==1.4.3
 Tree==0.2.4
 typing_extensions==4.7.1
 tzdata==2023.3
+tzlocal-5.0.1
 urllib3==2.0.4
 Werkzeug==2.3.7
 WTForms==3.0.1

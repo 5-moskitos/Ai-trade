@@ -1,5 +1,9 @@
 import json
 import random
+from apps.authentication.models import Users
+from apps.home.models import Transaction
+from apps.home.models import Trade
+from datetime import date
 
 def get_stock_data(stock_name):
 
@@ -43,3 +47,34 @@ def get_all_stock_data(category):
     data = [json.loads(get_stock_data(stock)) for stock in stock_names]
     return data
 
+
+
+def make_trade(username, amount, duration, stock_cap="nifty50"):
+    user = Users.query.filter_by(username=username).first()
+
+    """ Calling Model server to get prediction for top 10 companies which will be most profitable in coming 10 days 
+        update function name from get_profit_data to the one implemented in model side
+    """
+
+    invest = get_profit_data(stock_cap)
+
+    portions = [amount * factor for factor in invest['probability']]
+    i = 0
+
+    transaction_id = []
+    for company in invest['company']:
+        quantity = invest["curr_price"]/portions[i]
+        transaction = Transaction(uid = user.id, date_time = date.today(), Stock_name = company, buySell = 1, Price=portions[i], quantity = quantity)
+        transaction_id.append(transaction.tran_id)
+        i += 1
+
+    trade = Trade(user_id = user.id, trans_id = json.dumps(transaction_id), category = stock_cap, duration = duration, amount = amount)
+    
+
+
+
+
+
+
+def reevaluation():
+    pass
