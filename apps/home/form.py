@@ -19,3 +19,4 @@ class TradeForm(FlaskForm):
     duration = StringField('Duration', id="duration", validators=[DataRequired()])
 
 
+    moneytowithdraw = StringField('MoneytoWithdraw', id='moneytowithdraw', validators=[DataRequired()])
