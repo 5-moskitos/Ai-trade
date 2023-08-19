@@ -8,7 +8,7 @@ class AddMoney(FlaskForm):
                          validators=[DataRequired()])
 
 class WithdrawMoney(FlaskForm):
-    moneytowith = StringField('MoneytoWithdraw', id='moneytowith', validators=[DataRequired()])
+    moneytowithdraw = StringField('MoneytoWithdraw', id='moneytowith', validators=[DataRequired()])
 
 
 class TradeForm(FlaskForm):

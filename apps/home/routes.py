@@ -85,7 +85,7 @@ def wallet():
         user.current_balance+= int(money)
         db.session.commit()
 
-    return render_template("home/wallet.html",form=add_money)
+    return render_template("home/wallet.html",add_form=add_money, withdraw_form=withdraw_money)
 
 
 @blueprint.route('/aitrade')
