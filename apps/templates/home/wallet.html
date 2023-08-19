@@ -58,14 +58,14 @@ margin-right: 100px;
     <div class="submission-box" class="btn btn-primary btn-neutral">
       <form role="form" method="post" action="">
 
-        {{ form.hidden_tag() }}
+        {{ add_form.hidden_tag() }}
 
         <div class="form-group mb-3">
           <div class="input-group input-group-alternative">
             <div class="input-group-prepend">
               <span class="input-group-text"><i class="ni ni-single-02"></i></span>
             </div>
-            {{ form.moneytoadd(placeholder="MoneytoAdd",class="form-control") }}
+            {{ add_form.moneytoadd(placeholder="MoneytoAdd",class="form-control") }}
           </div>
         </div>
         <div class="text-center">
@@ -75,12 +75,24 @@ margin-right: 100px;
     </div>
 
     <button class="btn btn-primary btn-neutral show-form-button btn1" style="right: 150px; top:26px ; height: 80px; width: 210px;">Withdraw Money</button>
-    <div class="submission-box">
-        <form>
-            <label for="inputField" style="right: 90px;">Enter something:</label>
-            <input type="text" id="inputField">
-            <button type="submit" class="btn btn-primary btn-neutral">Add</button>
-        </form>
+    <div class="submission-box" class="btn btn-primary btn-neutral">
+      <form role="form" method="post" action="">
+
+        {{ withdraw_form.hidden_tag() }}
+
+        <div class="form-group mb-3">
+          <div class="input-group input-group-alternative">
+            <div class="input-group-prepend">
+              
+              <span class="input-group-text"><i class="ni ni-single-02"></i></span>
+            </div>
+            {{ withdraw_form.moneytowithdraw(placeholder="MoneytoWithdraw",class="form-control") }}
+          </div>
+        </div>
+        <div class="text-center">
+          <button type="submit" name="withdraw" class="btn btn-primary my-4">Withdraw</button>
+        </div>
+      </form>
     </div>
     
                       
@@ -264,4 +276,11 @@ margin-right: 100px;
 {% endblock content %}
 
 <!-- Specific JS goes HERE --> 
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+<script>
+  function clearInput() {
+      var inputField = document.getElementById("moneytoadd");
+      inputField.value = "";  // Clear the input field value
+  }
+</script>
+{% endblock javascripts %}
