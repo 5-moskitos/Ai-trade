@@ -4,14 +4,17 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from apps.home import blueprint
+from flask import render_template, request, session, redirect, url_for
 from flask import render_template, request,session,flash
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 from .utils import get_all_stock_data
-from .form import AddMoney,WithdrawMoney
+from .form import AddMoney,WithdrawMoney, TradeForm
 from flask_login import current_user
 from apps.authentication.models import Users
 from apps import db
+
+
 @blueprint.route('/index')
 @login_required
 def index():
@@ -68,6 +71,7 @@ def stocklistsc():
 
 @blueprint.route('/wallet', methods=['POST','GET'])
 @login_required
+@login_required
 def wallet():
     add_money = AddMoney(request.form)
     withdraw_money = WithdrawMoney(request.form)
@@ -80,22 +84,41 @@ def wallet():
         print(f"user :{user} , {type(user)} , {user.current_balance}")
         user.current_balance+= int(money)
         db.session.commit()
-    
-    if 'moneytowithdraw' in request.form:
-        money = request.form["moneytowithdraw"]
-        user_id = session["user_id"]
-        username = session["user_name"]
-        print(f"money : {money}, {user_id}, {username}")
-        user = Users.query.filter_by(id=user_id).first()
-        print(f"user :{user} , {type(user)} , {user.current_balance}")
-        if user.current_balance >= int(money):
-            user.current_balance -= int(money)
-            db.session.commit()
-        else:
-            flash("Insufficient balance for withdrawal.", "error")
-        db.session.commit()
-    
-    return render_template("home/wallet.html",add_form=add_money, withdraw_form=withdraw_money,mess="hello")
+
+    return render_template("home/wallet.html",form=add_money)
+
+
+@blueprint.route('/aitrade')
+@login_required
+def aitrade():
+    return render_template("home/aitrade.html")
+
+@blueprint.route('/create_trade', methods=['POST', 'GET'])
+@login_required
+def create_trade():
+    form = TradeForm(request.form)
+
+    if 'category' in request.form:
+        category = request.form["category"]
+        amount = request.form['tradelimit']
+        duration = request.form['duration']
+        uid = session['user_id']
+
+        print(f"category = {category}, amount = {amount}, duration = {duration}, uid = {uid}")
+
+        
+        return redirect( url_for('home_blueprint.dashboard'))
+        
+        
+    return render_template("home/tradeform.html", form=form)
+
+
+@blueprint.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template("home/index.html")
+
+
 
 
 
