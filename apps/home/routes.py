@@ -16,6 +16,9 @@ from apps import db
 import json
 import requests
 
+
+stock_prediction_url = 'http://localhost:8000'
+
 @blueprint.route('/index')
 @login_required
 def index():
@@ -42,14 +45,27 @@ def index():
 @blueprint.route('/stocklist/nifty50')
 @login_required
 def stocklistn50():
-    url = 'http://localhost:8000/get_NIFTY_50_prediction'
+    url = stock_prediction_url + '/get_data_NIFTY_50_prediction?fdays=1&&pdays=2'
     try:
+        data = {}
         res = requests.get(url=url)
         if res.status_code == 200:
             data = res.json()
-                
-        data = get_all_stock_data("nifty50")
-        return render_template("home/" + "stocklist.html", data=data, category="Nifty50")
+  
+        
+
+        tosend = []
+        for company, record in data.items():
+            temp = {}
+            temp['current_price'] = record["past"][-1]["Close"]
+            temp['company'] = company
+            temp['future'] = record['future']
+            temp['past'] = [x['Close'] for x in record['past'] ]
+            temp['pre_change_past'] = 100 * ((record["past"][-1]["Close"] - record["past"][-2]["Close"])/record["past"][-1]["Close"])
+            temp['pre_change_future'] = 100 * ((record["future"][0] - record["past"][-1]["Close"])/record["future"][0])
+            tosend.append(temp)
+       
+        return render_template("home/" + "stocklist.html", data=tosend, category="Nifty50")
 
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404
@@ -62,10 +78,27 @@ def stocklistn50():
 @blueprint.route('/stocklist/midCap')
 @login_required
 def stocklistmc():
-
+    url = stock_prediction_url + '/get_data_midcap_prediction?fdays=1&&pdays=2'
     try:
-        data = get_all_stock_data("midCap")
-        return render_template("home/" + "stocklist.html", data=data, category="Mid Cap")
+        data = {}
+        res = requests.get(url=url)
+        if res.status_code == 200:
+            data = res.json()
+  
+        
+
+        tosend = []
+        for company, record in data.items():
+            temp = {}
+            temp['current_price'] = record["past"][-1]["Close"]
+            temp['company'] = company
+            temp['future'] = record['future']
+            temp['past'] = [x['Close'] for x in record['past'] ]
+            temp['pre_change_past'] = 100 * ((record["past"][-1]["Close"] - record["past"][-2]["Close"])/record["past"][-1]["Close"])
+            temp['pre_change_future'] = 100 * ((record["future"][0] - record["past"][-1]["Close"])/record["future"][0])
+            tosend.append(temp)
+       
+        return render_template("home/" + "stocklist.html", data=tosend, category="Mid Cap")
 
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404
@@ -79,10 +112,27 @@ def stocklistmc():
 @blueprint.route('/stocklist/smallCap')
 @login_required
 def stocklistsc():
-
+    url = stock_prediction_url + '/get_data_smallcap_prediction?fdays=1&&pdays=2'
     try:
-        data = get_all_stock_data("smallCap")
-        return render_template("home/" + "stocklist.html", data=data, category="Small Cap")
+        data = {}
+        res = requests.get(url=url)
+        if res.status_code == 200:
+            data = res.json()
+  
+        
+
+        tosend = []
+        for company, record in data.items():
+            temp = {}
+            temp['current_price'] = record["past"][-1]["Close"]
+            temp['company'] = company
+            temp['future'] = record['future']
+            temp['past'] = [x['Close'] for x in record['past'] ]
+            temp['pre_change_past'] = 100 * ((record["past"][-1]["Close"] - record["past"][-2]["Close"])/record["past"][-1]["Close"])
+            temp['pre_change_future'] = 100 * ((record["future"][0] - record["past"][-1]["Close"])/record["future"][0])
+            tosend.append(temp)
+       
+        return render_template("home/" + "stocklist.html", data=tosend, category="Small Cap")
 
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404

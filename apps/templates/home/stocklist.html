@@ -48,12 +48,12 @@
                 <th scope="row">
                   <div class="media align-items-center">
                     <div class="media-body">
-                      <span class="name mb-0 text-sm">{{ row["stockname"] }}</span>
+                      <span class="name mb-0 text-sm">{{ row['company'] }}</span>
                     </div>
                   </div>
                 </th>
                 <td class="budget">
-                    {{ row["data"]["current_price"] }} INR
+                    {{ "%.2f" % row['current_price'] }} INR
                 </td>
                 <td>
                   {% if row["pre_change_past"] > 0 %}
