@@ -7,7 +7,7 @@ from apps.home import blueprint
 from flask import Flask,render_template, request, session, redirect, url_for,flash
 from flask_login import login_required
 from jinja2 import TemplateNotFound
-from .utils import get_all_stock_data, make_trade
+from .utils import get_all_stock_data, make_trade, get_trade_info
 from .form import AddMoney,WithdrawMoney, TradeForm
 from flask_login import current_user
 from apps.authentication.models import Users
@@ -24,23 +24,39 @@ stock_prediction_url = 'http://localhost:8000'
 def index():
     transactions = Transaction.query.all()
     stock_investments = {}
+    global_investment =0
     for transaction in transactions:
         stock_name = transaction.Stock_name
         price = transaction.Price
         quantity = transaction.quantity
         total_investment = price * quantity
+        global_investment += total_investment
 
         if stock_name in stock_investments:
             stock_investments[stock_name] += total_investment
         else:
             stock_investments[stock_name] = total_investment
 
-    labels = list(stock_investments.keys())
-    data = list(stock_investments.values())
-    labels_json = json.dumps(labels)
-    data_json = json.dumps(data)
-    
-    return render_template('home/index.html',transaction=transactions,labels_json=labels_json, data_json=data_json)
+    sorted_investments = dict(sorted(stock_investments.items(), key=lambda item: item[1], reverse=True))
+
+    # labels = list(stock_investments.keys())
+    # data = list(stock_investments.values())
+    # labels_json = json.dumps(labels)
+    # data_json = json.dumps(data)
+    top_four = dict(list(sorted_investments.items())[:4])
+    remaining = dict(list(sorted_investments.items())[4:])
+
+    remaining_total_investment = sum(remaining.values())
+
+    # Create a list for the chart data
+    chart_data = [{'label': stock_name, 'data': total_investment} for stock_name, total_investment in top_four.items()]
+    chart_data.append({'label': 'Remaining', 'data': remaining_total_investment})
+
+    # Convert chart_data to JSON strings
+    labels_json = json.dumps([item['label'] for item in chart_data])
+    data_json = json.dumps([item['data'] for item in chart_data])
+
+    return render_template('home/index.html', transaction=transactions, labels_json=labels_json, data_json=data_json, total_investment=global_investment)
 
 @blueprint.route('/stocklist/nifty50')
 @login_required
@@ -143,7 +159,6 @@ def stocklistsc():
 
 @blueprint.route('/wallet', methods=['POST','GET'])
 @login_required
-@login_required
 def wallet():
     add_money = AddMoney(request.form)
     withdraw_money = WithdrawMoney(request.form)
@@ -152,9 +167,7 @@ def wallet():
         money = request.form["moneytoadd"]
         user_id = session["user_id"]
         username = session["user_name"]
-        print(f"money : {money}, {user_id}, {username}")
         user = Users.query.filter_by(id=user_id).first()
-        print(f"user :{user} , {type(user)} , {user.current_balance}")
         user.current_balance+= int(money)
         db.session.commit()
 
@@ -179,7 +192,11 @@ def wallet():
 @blueprint.route('/aitrade')
 @login_required
 def aitrade():
-    return render_template("home/aitrade.html")
+
+    user_id = session['user_id']
+    data = get_trade_info(user_id=user_id)
+    print(data)
+    return render_template("home/aitrade.html", data=data)
 
 @blueprint.route('/create_trade', methods=['POST', 'GET'])
 @login_required
@@ -208,9 +225,6 @@ def dashboard():
     username = session["user_name"]
     user = Users.query.filter_by(id=user_id).first()
     tran = Transaction.query.filter_by(uid=user.id).first()
-    c=[]
-    c.append(tran)
-    print(c[0])
     return render_template("home/index.html",tran=c)
 
 
