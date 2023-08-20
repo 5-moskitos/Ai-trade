@@ -17,6 +17,5 @@ class TradeForm(FlaskForm):
     tradelimit = StringField('Amount to Invest', id='tradelimit', validators=[DataRequired()])
     # stockpricelimit = StringField('StockPriceLimit', id='stockpricelimit', validators=[DataRequired()])
     duration = StringField('Duration', id="duration", validators=[DataRequired()])
-
-
     moneytowithdraw = StringField('MoneytoWithdraw', id='moneytowithdraw', validators=[DataRequired()])
+

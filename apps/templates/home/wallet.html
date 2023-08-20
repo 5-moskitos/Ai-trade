@@ -35,7 +35,7 @@ margin-right: 100px;
         <div class="card-body "  >
           <div class="row" >
             <div class="col">
-              <h5 class="card-title text-uppercase text-muted mb-0">ACCOUNT BALANCE </h5>
+              <h5 class="card-title text-uppercase text-muted mb-0">WALLET BALANCE </h5>
               <span class="h2 font-weight-bold mb-0">Rs. {{ current_user.current_balance }}</span>
             </div>
           
@@ -127,154 +127,50 @@ margin-right: 100px;
           <thead class="thead-dark">
             <tr>
               <th scope="col">Stock</th>
-              <th scope="col">Buy/Sell</th>
               <th scope="col">Price</th>
               <th scope="col">Quantity</th>
+              <th scope="col">Total Investment</th>
               <th scope="col">Date and Time</th>
               <th scope="col"> Transaction_ID</th>
             </tr>
           </thead>
           <tbody class="list">
+            {% for transaction in transaction %}
             <tr>
               <th scope="row">
                 <div class="media align-items-center">
                   <div class="media-body">
-                    <span class="name mb-0 text-sm">TATA STEEL</span>
+                    <span class="name mb-0 text-sm">{{transaction.Stock_name}}</span>
                   </div>
                 </div>
               </th>
-              <td class="budget">
-                Buy
+              <td>
+                <span class="badge badge-dot mr-4">
+                  <i class="bg-warning"></i>
+                  <span class="status">Rs.{{transaction.Price}}</span>
+                </span>
               </td>
               <td>
                 <span class="badge badge-dot mr-4">
                   <i class="bg-warning"></i>
-                  <span class="status">Rs.34.55</span>
+                  <span class="status">{{transaction.quantity}}</span>
                 </span>
               </td>
-              <td class="budget">
-               3
+              <td>
+                <span class="badge badge-dot mr-4">
+                  <i class="bg-warning"></i>
+                  <span class="status">{{transaction.quantity * transaction.Price}}</span>
+                </span>
               </td>
               <td>
                 <div class="d-flex align-items-center">
-                  <span>27-12-22 12:30:41</span>
+                  <span>{{transaction.date_time}}</span>
                 </div>
                 <td class="budget">
                   3237543853248
                  </td>
             </tr>
-            <tr>
-              <th scope="row">
-                <div class="media align-items-center">
-                  <div class="media-body">
-                    <span class="name mb-0 text-sm">ADANIENT</span>
-                  </div>
-                </div>
-              </th>
-              <td class="budget">
-                Buy
-              </td>
-              <td>
-                <span class="badge badge-dot mr-4">
-                  <i class="bg-warning"></i>
-                  <span class="status">Rs.2563.1</span>
-                </span>
-              </td>
-              <td class="budget">
-               3
-              </td>
-              <td>
-                <div class="d-flex align-items-center">
-                  <span>29-12-22 12:30:41</span>
-                </div>
-                <td class="budget">
-                  5346532464
-                 </td>
-            </tr>
-            <tr>
-              <th scope="row">
-                <div class="media align-items-center">
-                  <div class="media-body">
-                    <span class="name mb-0 text-sm">EICHERMOT</span>
-                  </div>
-                </div>
-              </th>
-              <td class="budget">
-                Buy
-              </td>
-              <td>
-                <span class="badge badge-dot mr-4">
-                  <i class="bg-warning"></i>
-                  <span class="status">Rs.3338.65</span>
-                </span>
-              </td>
-              <td class="budget">
-               1
-              </td>
-              <td>
-                <div class="d-flex align-items-center">
-                  <span>12-01-23 12:30:41</span>
-                </div>
-                <td class="budget">
-                  45634634634
-                 </td>
-            </tr>
-            <tr>
-              <th scope="row">
-                <div class="media align-items-center">
-                  <div class="media-body">
-                    <span class="name mb-0 text-sm">ADANIENT</span>
-                  </div>
-                </div>
-              </th>
-              <td class="budget">
-                Sell
-              </td>
-              <td>
-                <span class="badge badge-dot mr-4">
-                  <i class="bg-warning"></i>
-                  <span class="status">Rs.2610.56</span>
-                </span>
-              </td>
-              <td class="budget">
-               2
-              </td>
-              <td>
-                <div class="d-flex align-items-center">
-                  <span>27-12-22 12:30:41</span>
-                </div>
-                <td class="budget">
-                  3243542554
-                 </td>
-            </tr>
-            <tr>
-              <th scope="row">
-                <div class="media align-items-center">
-                  <div class="media-body">
-                    <span class="name mb-0 text-sm">AXISBANK</span>
-                  </div>
-                </div>
-              </th>
-              <td class="budget">
-                Buy
-              </td>
-              <td>
-                <span class="badge badge-dot mr-4">
-                  <i class="bg-warning"></i>
-                  <span class="status">Rs.942.3</span>
-                </span>
-              </td>
-              <td class="budget">
-               6
-              </td>
-              <td>
-                <div class="d-flex align-items-center">
-                  <span>12-01-23 2 12:30:41</span>
-                </div>
-                <td class="budget">
-                  428376423243
-                 </td>
-            </tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>
