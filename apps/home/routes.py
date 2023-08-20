@@ -4,22 +4,40 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from apps.home import blueprint
-from flask import render_template, request, session, redirect, url_for
-from flask import render_template, request,session,flash
+from flask import Flask,render_template, request, session, redirect, url_for,flash
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 from .utils import get_all_stock_data
 from .form import AddMoney,WithdrawMoney, TradeForm
 from flask_login import current_user
 from apps.authentication.models import Users
+from apps.home.models import Transaction
 from apps import db
+import json
 
 
 @blueprint.route('/index')
 @login_required
 def index():
+    transactions = Transaction.query.all()
+    stock_investments = {}
+    for transaction in transactions:
+        stock_name = transaction.Stock_name
+        price = transaction.Price
+        quantity = transaction.quantity
+        total_investment = price * quantity
 
-    return render_template('home/index.html', segment='index')
+        if stock_name in stock_investments:
+            stock_investments[stock_name] += total_investment
+        else:
+            stock_investments[stock_name] = total_investment
+
+    labels = list(stock_investments.keys())
+    data = list(stock_investments.values())
+    labels_json = json.dumps(labels)
+    data_json = json.dumps(data)
+    
+    return render_template('home/index.html',transaction=transactions,labels_json=labels_json, data_json=data_json)
 
 @blueprint.route('/stocklist/nifty50')
 @login_required
@@ -99,7 +117,9 @@ def wallet():
         else:
             flash("Insufficient balance for withdrawal.", "error")
 
-    return render_template("home/wallet.html",add_form=add_money, withdraw_form=withdraw_money)
+
+    transaction = Transaction.query.all()
+    return render_template("home/wallet.html",add_form=add_money, withdraw_form=withdraw_money,transaction=transaction)
 
 
 @blueprint.route('/aitrade')
