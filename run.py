@@ -19,7 +19,8 @@ from apps import create_app, db
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 # The configuration
-get_config_mode = 'Debug' if DEBUG else 'Production'
+# get_config_mode = 'Debug' if DEBUG else 'Production'
+get_config_mode = 'Production'
 
 try:
 
