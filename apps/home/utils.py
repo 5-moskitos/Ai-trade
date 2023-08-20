@@ -63,12 +63,47 @@ def get_profit_data(stock_cap):
 
     return invest
 
+def predicted_profit(username):
+    user = Users.query.filter_by(username=username).first()
+    trades = Trade.query.all()
+    
+    total_invested = 0
+    predicted_valuation = 0
+    for trade in trades:
+        if trade.user_id == user.id:
+            total_invested += trade.amount
+            company_name = []
+            buy_price = []
+            quantity_bought = []
+            
+            tran_ids = [int(x.strip()) for x in trade.tran_id.split(' ')]
+            
+            for tran_id in tran_ids:
+                tran = Transaction.query.filter_by(tran_id = tran_id).first()
+                company_name.append(tran.Stock_name)
+                buy_price.append(tran.Price)
+                quantity_bought.append(tran.quantity)
+
+            for i in range(len(company_name)):
+                data = json.loads(get_stock_data(company_name[i], trade.duration))
+                predicted_price = data[-1]
+                predicted_valuation += predicted_price * quantity_bought[i]
+
+            
+    return predicted_valuation-total_invested
+
+
+
 def make_trade(username, amount, duration, stock_cap="nifty50"):
     user = Users.query.filter_by(username=username).first()
 
-    """ Calling Model server to get prediction for top 10 companies which will be most profitable in coming 10 days 
-        update function name from get_profit_data to the one implemented in model side
-    """
+
+    if user.current_balance < amount :
+        """
+            Display a "Insufficient Balance" message to user
+        """
+        pass
+
     amount = int(amount)
     duration = int(duration)
 
@@ -110,6 +145,8 @@ def reevaluation(app):
     trades = Trade.query.all()
 
     for trade in trades:
+        trade.duration -= 1
+
         user = Users.query.filter_by(id = trade.user_id).first()
         tran_ids = [int(x.strip()) for x in trade.tran_id.split(' ')]
         company_name = []
@@ -126,6 +163,14 @@ def reevaluation(app):
             buy_price.append(tran.Price)
             quantity_bought.append(tran.quantity)
 
+        if trade.duration <= 0:
+            for tran_id in tran_ids:
+                Transaction.query.filter_by(tran_id = tran_id).delete()
+            Trade.query.filter_by(trade_id = trade.trade_id).delete()
+            user.current_balance += sum([x * y for x, y in zip(curr_price, quantity_bought)])
+            db.session.commit()
+            app_context.pop()
+            continue
 
         curr_price = []
         for company in company_name:
@@ -145,7 +190,7 @@ def reevaluation(app):
             for tran_id in tran_ids:
                 Transaction.query.filter_by(tran_id = tran_id).delete()
             Trade.query.filter_by(trade_id = trade.trade_id).delete()
-            user.current_balance += sum(curr_price)
+            user.current_balance += sum([x * y for x, y in zip(curr_price, quantity_bought)])
             """
                 Display to user that his trade has been deleted as
                 the loss exceeded beyond threshold
