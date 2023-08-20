@@ -21,23 +21,39 @@ import json
 def index():
     transactions = Transaction.query.all()
     stock_investments = {}
+    global_investment =0
     for transaction in transactions:
         stock_name = transaction.Stock_name
         price = transaction.Price
         quantity = transaction.quantity
         total_investment = price * quantity
+        global_investment += total_investment
 
         if stock_name in stock_investments:
             stock_investments[stock_name] += total_investment
         else:
             stock_investments[stock_name] = total_investment
 
-    labels = list(stock_investments.keys())
-    data = list(stock_investments.values())
-    labels_json = json.dumps(labels)
-    data_json = json.dumps(data)
-    
-    return render_template('home/index.html',transaction=transactions,labels_json=labels_json, data_json=data_json)
+    sorted_investments = dict(sorted(stock_investments.items(), key=lambda item: item[1], reverse=True))
+
+    # labels = list(stock_investments.keys())
+    # data = list(stock_investments.values())
+    # labels_json = json.dumps(labels)
+    # data_json = json.dumps(data)
+    top_four = dict(list(sorted_investments.items())[:4])
+    remaining = dict(list(sorted_investments.items())[4:])
+
+    remaining_total_investment = sum(remaining.values())
+
+    # Create a list for the chart data
+    chart_data = [{'label': stock_name, 'data': total_investment} for stock_name, total_investment in top_four.items()]
+    chart_data.append({'label': 'Remaining', 'data': remaining_total_investment})
+
+    # Convert chart_data to JSON strings
+    labels_json = json.dumps([item['label'] for item in chart_data])
+    data_json = json.dumps([item['data'] for item in chart_data])
+
+    return render_template('home/index.html', transaction=transactions, labels_json=labels_json, data_json=data_json, total_investment=global_investment)
 
 @blueprint.route('/stocklist/nifty50')
 @login_required
