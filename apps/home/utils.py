@@ -121,7 +121,7 @@ def make_trade(username, amount, duration, stock_cap="Nifty50"):
 
     cap = ""
     if stock_cap == "Nifty50":
-        cap = "Nifty_50"
+        cap = "NIFTY_50"
     elif stock_cap == "Small Cap":
         cap = "small_cap"
     else:
@@ -153,7 +153,11 @@ def make_trade(username, amount, duration, stock_cap="Nifty50"):
         portions = [amount * factor for factor in invest['prob']]
         quantities = [cur_price/portion for cur_price, portion in zip(invest['cur_price'], portions)]
         i = 0
-
+        print("port", portions)
+        print("QUAN", quantities)
+        print("CURPR", invest['cur_price'])
+        print("PROB", invest['prob'])
+        
         transaction_id = []
         for company in invest['comp']:
             transaction = Transaction(uid = user.id, date_time = date.today(), Stock_name = company, buySell = 1, Price=portions[i], quantity = quantities[i])
@@ -273,7 +277,7 @@ def reevaluation(app):
 
             cap = ""
             if trade.category == "Nifty50":
-                cap = "Nifty_50"
+                cap = "NIFTY_50"
             elif trade.category == "Small Cap":
                 cap = "small_cap"
             else:
@@ -336,6 +340,8 @@ def reevaluation(app):
 def get_trade_info(user_id):
     trades = Trade.query.filter_by(user_id=user_id).all()
 
+    if (len(trades) == 0):
+        return {}
     data = []
 
     for trade in trades:
@@ -353,12 +359,12 @@ def get_trade_info(user_id):
             trans_temp = {}
             company = transaction.Stock_name
             sett.extend(company)
-            res = requests.get(stock_prediction_url + f'/get_current_data?company_name{company.upper()}=&&days=1')
+            res = requests.get(stock_prediction_url + f'/get_current_data?company_name={company.upper()}&&days=1')
             current_price = 0
             if res.status_code == 200:
-                res = res.json()
-                print(res)
-                current_price = res[company.upper()]['Close']
+                response = res.json()
+                print(response)
+                current_price = response[company.upper()][0]['Close']
             
             trans_temp['current_price'] = current_price
             trans_temp['company'] = company
