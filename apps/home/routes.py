@@ -19,9 +19,10 @@ import requests
 
 stock_prediction_url = 'http://localhost:8000'
 
-@blueprint.route('/index')
+
+@blueprint.route('/dashboard')
 @login_required
-def index():
+def dashboard():
     transactions = Transaction.query.all()
     stock_investments = {}
     global_investment =0
@@ -195,7 +196,7 @@ def aitrade():
 
     user_id = session['user_id']
     data = get_trade_info(user_id=user_id)
-    print(data)
+    
     return render_template("home/aitrade.html", data=data)
 
 @blueprint.route('/create_trade', methods=['POST', 'GET'])
@@ -217,15 +218,6 @@ def create_trade():
         
     return render_template("home/tradeform.html", form=form)
 
-
-@blueprint.route('/dashboard')
-@login_required
-def dashboard():
-    user_id = session["user_id"]
-    username = session["user_name"]
-    user = Users.query.filter_by(id=user_id).first()
-    tran = Transaction.query.filter_by(uid=user.id).first()
-    return render_template("home/index.html",tran=c)
 
 
 
