@@ -14,7 +14,7 @@ from apps.authentication.models import Users
 from apps.home.models import Transaction
 from apps import db
 import json
-
+import requests
 
 @blueprint.route('/index')
 @login_required
@@ -42,8 +42,12 @@ def index():
 @blueprint.route('/stocklist/nifty50')
 @login_required
 def stocklistn50():
-
+    url = 'http://localhost:8000/get_NIFTY_50_prediction'
     try:
+        res = requests.get(url=url)
+        if res.status_code == 200:
+            data = res.json()
+                
         data = get_all_stock_data("nifty50")
         return render_template("home/" + "stocklist.html", data=data, category="Nifty50")
 
