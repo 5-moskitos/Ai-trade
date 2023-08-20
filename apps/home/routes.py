@@ -11,15 +11,21 @@ from jinja2 import TemplateNotFound
 from .utils import get_all_stock_data, make_trade
 from .form import AddMoney,WithdrawMoney, TradeForm
 from flask_login import current_user
-from apps.authentication.models import Users
+from apps.authentication.models import Users,Transaction
 from apps import db
 
 
 @blueprint.route('/index')
 @login_required
 def index():
-
-    return render_template('home/index.html', segment='index')
+    user_id = session["user_id"]
+    username = session["user_name"]
+    user = Users.query.filter_by(id=user_id).first()
+    tran = Transaction.query.filter_by(uid=user.id).first()
+    c=[]
+    c.append(tran)
+    print(c[0])
+    return render_template('home/index.html', segment='index',tran=c)
 
 @blueprint.route('/stocklist/nifty50')
 @login_required
@@ -101,7 +107,6 @@ def wallet():
 
     return render_template("home/wallet.html",add_form=add_money, withdraw_form=withdraw_money)
 
-
 @blueprint.route('/aitrade')
 @login_required
 def aitrade():
@@ -130,7 +135,14 @@ def create_trade():
 @blueprint.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template("home/index.html")
+    user_id = session["user_id"]
+    username = session["user_name"]
+    user = Users.query.filter_by(id=user_id).first()
+    tran = Transaction.query.filter_by(uid=user.id).first()
+    c=[]
+    c.append(tran)
+    print(c[0])
+    return render_template("home/index.html",tran=c)
 
 
 
