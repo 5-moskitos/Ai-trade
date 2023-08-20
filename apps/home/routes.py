@@ -7,7 +7,7 @@ from apps.home import blueprint
 from flask import Flask,render_template, request, session, redirect, url_for,flash
 from flask_login import login_required
 from jinja2 import TemplateNotFound
-from .utils import get_all_stock_data, make_trade
+from .utils import get_all_stock_data, make_trade, get_trade_info
 from .form import AddMoney,WithdrawMoney, TradeForm
 from flask_login import current_user
 from apps.authentication.models import Users
@@ -143,7 +143,6 @@ def stocklistsc():
 
 @blueprint.route('/wallet', methods=['POST','GET'])
 @login_required
-@login_required
 def wallet():
     add_money = AddMoney(request.form)
     withdraw_money = WithdrawMoney(request.form)
@@ -152,9 +151,7 @@ def wallet():
         money = request.form["moneytoadd"]
         user_id = session["user_id"]
         username = session["user_name"]
-        print(f"money : {money}, {user_id}, {username}")
         user = Users.query.filter_by(id=user_id).first()
-        print(f"user :{user} , {type(user)} , {user.current_balance}")
         user.current_balance+= int(money)
         db.session.commit()
 
@@ -179,7 +176,11 @@ def wallet():
 @blueprint.route('/aitrade')
 @login_required
 def aitrade():
-    return render_template("home/aitrade.html")
+
+    user_id = session['user_id']
+    data = get_trade_info(user_id=user_id)
+    print(data)
+    return render_template("home/aitrade.html", data=data)
 
 @blueprint.route('/create_trade', methods=['POST', 'GET'])
 @login_required
@@ -208,9 +209,6 @@ def dashboard():
     username = session["user_name"]
     user = Users.query.filter_by(id=user_id).first()
     tran = Transaction.query.filter_by(uid=user.id).first()
-    c=[]
-    c.append(tran)
-    print(c[0])
     return render_template("home/index.html",tran=c)
 
 
