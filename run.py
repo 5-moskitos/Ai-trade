@@ -34,7 +34,7 @@ Migrate(app, db)
 
 scheduler = BackgroundScheduler()
 scheduler.start()
-ist_time = datetime.now(pytz.timezone('Asia/Kolkata')).replace(hour=16, minute=0, second=0)
+ist_time = datetime.now(pytz.timezone('Asia/Kolkata')).replace(hour=16, minute=26, second=30)
 
 
 if DEBUG:
@@ -43,5 +43,5 @@ if DEBUG:
     app.logger.info('DBMS        = ' + app_config.SQLALCHEMY_DATABASE_URI)
 
 if __name__ == "__main__":
-    scheduler.add_job(reevaluation, CronTrigger(hour=ist_time.hour, minute=ist_time.minute, second=ist_time.second))
+    scheduler.add_job(reevaluation, CronTrigger(hour=ist_time.hour, minute=ist_time.minute, second=ist_time.second), args = (app,))
     app.run()
