@@ -3,41 +3,46 @@ import random
 from apps.authentication.models import Users
 from apps.home.models import Transaction
 from apps.home.models import Trade
+from jinja2 import TemplateNotFound
 from datetime import date
+from flask import Flask,render_template, request, session, redirect, url_for,flash
 from apps import db
 import numpy as np
+import json
 import requests
 
+
 stock_prediction_url = 'http://localhost:8000'
-def get_stock_data(stock_name):
 
-    min_value = 100.0
-    max_value = 200.0
-    
-    current_price = 150.0 
+# def get_stock_data(stock_name):
 
+#     min_value = 100.0
+#     max_value = 200.0
     
-    past_30_days = [random.uniform(min_value, max_value) for _ in range(100)] # Replace with actual data
+#     current_price = 150.0 
 
     
-    future_10_days = [random.uniform(min_value, max_value) for _ in range(10)]
-
-    # Create a dictionary with the collected data
-    stock_data = {
-        "stockname": stock_name,
-        "data": {
-            "current_price": current_price,
-            "past_30_days": past_30_days,
-            "future_10_days": future_10_days
-        }
-    }
+#     past_30_days = [random.uniform(min_value, max_value) for _ in range(100)] # Replace with actual data
 
     
-    stock_data['pre_change_past'] = 100 * ((stock_data["data"]["current_price"] - stock_data["data"]["past_30_days"][-1])/stock_data["data"]["past_30_days"][-1])
-    stock_data['pre_change_future'] = 100 * ((stock_data["data"]["future_10_days"][0] - stock_data["data"]["current_price"])/stock_data["data"]["future_10_days"][0])
+#     future_10_days = [random.uniform(min_value, max_value) for _ in range(10)]
+
+#     # Create a dictionary with the collected data
+#     stock_data = {
+#         "stockname": stock_name,
+#         "data": {
+#             "current_price": current_price,
+#             "past_30_days": past_30_days,
+#             "future_10_days": future_10_days
+#         }
+#     }
+
+    
+#     stock_data['pre_change_past'] = 100 * ((stock_data["data"]["current_price"] - stock_data["data"]["past_30_days"][-1])/stock_data["data"]["past_30_days"][-1])
+#     stock_data['pre_change_future'] = 100 * ((stock_data["data"]["future_10_days"][0] - stock_data["data"]["current_price"])/stock_data["data"]["future_10_days"][0])
     
 
-    return json.dumps(stock_data, indent=4)
+#     return json.dumps(stock_data, indent=4)
 
 
 def get_all_stock_data(category):
@@ -51,19 +56,19 @@ def get_all_stock_data(category):
     data = [json.loads(get_stock_data(stock)) for stock in stock_names]
     return data
 
-def get_profit_data(stock_cap):
-    invest = {}
-    with open('apps/stocks.json', 'r') as fp:
-        stock_names = json.load(fp)
+# def get_profit_data(stock_cap):
+#     invest = {}
+#     with open('apps/stocks.json', 'r') as fp:
+#         stock_names = json.load(fp)
     
-    stock_names = stock_names[stock_cap][:10]
+#     stock_names = stock_names[stock_cap][:10]
 
-    invest['company'] = stock_names
-    invest['probability'] = [random.uniform(0.01, 1) for _ in range(len(stock_names))] 
-    invest["curr_price"] = [random.uniform(10, 1000) for _ in range(len(stock_names))]
+#     invest['company'] = stock_names
+#     invest['probability'] = [random.uniform(0.01, 1) for _ in range(len(stock_names))] 
+#     invest["curr_price"] = [random.uniform(10, 1000) for _ in range(len(stock_names))]
 
 
-    return invest
+#     return invest
 
 def predicted_profit(username):
     user = Users.query.filter_by(username=username).first()
@@ -87,8 +92,24 @@ def predicted_profit(username):
                 quantity_bought.append(tran.quantity)
 
             for i in range(len(company_name)):
-                data = json.loads(get_stock_data(company_name[i], trade.duration))
-                predicted_price = data[-1]
+                url = stock_prediction_url + f"/get_company_prediction?company_name={company_name[i]}&&fdays=10&&pdays=0"
+                try:
+                    data = {}
+                    res = requests.get(url=url)
+                    if res.status_code == 200:
+                        data = res.json()
+                except TemplateNotFound:
+                    return render_template('home/page-404.html'), 404
+
+                except Exception as e:
+                    print("here ", e)
+                    return render_template('home/page-500.html'), 500
+                
+                future = []
+                for company, record in data.items():
+                    future = record["future"]
+
+                predicted_price = future[-1]
                 predicted_valuation += predicted_price * quantity_bought[i]
 
             
@@ -96,38 +117,64 @@ def predicted_profit(username):
 
 
 
-def make_trade(username, amount, duration, stock_cap="nifty50"):
-    user = Users.query.filter_by(username=username).first()
+def make_trade(username, amount, duration, stock_cap="Nifty50"):
 
-    amount = int(amount)
-    duration = int(duration)
+    cap = ""
+    if stock_cap == "Nifty50":
+        cap = "Nifty_50"
+    elif stock_cap == "Small Cap":
+        cap = "small_cap"
+    else:
+        cap = "mid_cap"
 
-    if user.current_balance < amount :
-        """
-            Display a "Insufficient Balance" message to user
-        """
-        pass
+    url = stock_prediction_url + f"/get_{cap}_sigmoid"
+    try:
+        invest = {}
+        res = requests.get(url=url)
+        if res.status_code == 200:
+            invest = res.json()
 
 
-    invest = get_profit_data(stock_cap.lower())
-    portions = [amount * factor for factor in invest['probability']]
-    quantities = [cur_price/portion for cur_price, portion in zip(invest['curr_price'], portions)]
-    i = 0
 
-    transaction_id = []
-    for company in invest['company']:
-        transaction = Transaction(uid = user.id, date_time = date.today(), Stock_name = company, buySell = 1, Price=portions[i], quantity = quantities[i])
-        db.session.add(transaction)
-        db.session.flush()
-        transaction_id.append(transaction.tran_id)
-        i += 1
+        user = Users.query.filter_by(username=username).first()
 
-    print(transaction_id)
-    tran_string = " ".join([str(x) for x in transaction_id])
-    trade = Trade(user_id = user.id, tran_id = tran_string, category = stock_cap, duration = duration, amount = amount)
-    
-    db.session.add(trade)
-    db.session.commit()
+        
+        amount = int(amount)
+        duration = int(duration)
+        
+        if user.current_balance < amount :
+            """
+                Display a "Insufficient Balance" message to user
+            """
+            pass
+        else:
+            user.current_balance -= amount
+
+        portions = [amount * factor for factor in invest['prob']]
+        quantities = [cur_price/portion for cur_price, portion in zip(invest['cur_price'], portions)]
+        i = 0
+
+        transaction_id = []
+        for company in invest['comp']:
+            transaction = Transaction(uid = user.id, date_time = date.today(), Stock_name = company, buySell = 1, Price=portions[i], quantity = quantities[i])
+            db.session.add(transaction)
+            db.session.flush()
+            transaction_id.append(transaction.tran_id)
+            i += 1
+
+        print(transaction_id)
+        tran_string = " ".join([str(x) for x in transaction_id])
+        trade = Trade(user_id = user.id, tran_id = tran_string, category = stock_cap, duration = duration, amount = amount)
+        
+        db.session.add(trade)
+        db.session.commit()
+
+    except TemplateNotFound:
+        return render_template('home/page-404.html'), 404
+
+    except Exception as e:
+        print("here ", e)
+        return render_template('home/page-500.html'), 500
 
 
 
@@ -141,6 +188,8 @@ def reevaluation(app):
 
     ############# Code for calling finetuning function to fine tune model everyday ###########
 
+    url = stock_prediction_url + '/finetune'
+    requests.get(url=url)
 
     ############# Code for reevaluation of every trade in the trade table ####################
 
@@ -176,8 +225,20 @@ def reevaluation(app):
 
         curr_price = []
         for company in company_name:
-            data = json.loads(get_stock_data(company))
-            curr_price.append(int(data["data"]["current_price"]))
+            url = stock_prediction_url + f"/get_current_data?company_name={company}&&days=1"
+            try:
+                data = {}
+                res = requests.get(url=url)
+                if res.status_code == 200:
+                    data = res.json()
+            except TemplateNotFound:
+                return render_template('home/page-404.html'), 404
+
+            except Exception as e:
+                print("here ", e)
+                return render_template('home/page-500.html'), 500
+            
+            curr_price.append(int(data["Close"]))
 
         total_loss = 0
 
@@ -209,6 +270,27 @@ def reevaluation(app):
             for tran_id in tran_ids:
                 if tran_id not in tran_to_be_deleted:
                     keep_transactions.append(tran_id)
+
+            cap = ""
+            if trade.category == "Nifty50":
+                cap = "Nifty_50"
+            elif trade.category == "Small Cap":
+                cap = "small_cap"
+            else:
+                cap = "mid_cap"
+            # url = stock_prediction_url + f"/get_{trade.category}_sigmoid"
+            # try:
+            #     invest = {}
+            #     res = requests.get(url=url)
+            #     if res.status_code == 200:
+            #         invest = res.json()
+            # except TemplateNotFound:
+            #     return render_template('home/page-404.html'), 404
+
+            # except Exception as e:
+            #     print("here ", e)
+            #     return render_template('home/page-500.html'), 500
+
 
             invest = get_profit_data(trade.category.lower())
 
