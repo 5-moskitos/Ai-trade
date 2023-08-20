@@ -12,6 +12,9 @@ class Transaction(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     Trade=db.relationship('Trade',backref='transaction')
 
+    def __repr__(self):
+        str(self.tran_id)
+
 class Trade(db.Model):
     __tablename__='Trade'
 
