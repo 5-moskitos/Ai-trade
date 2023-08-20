@@ -6,7 +6,9 @@ from apps.home.models import Trade
 from datetime import date
 from apps import db
 import numpy as np
+import requests
 
+stock_prediction_url = 'http://localhost:8000'
 def get_stock_data(stock_name):
 
     min_value = 100.0
@@ -97,6 +99,8 @@ def predicted_profit(username):
 def make_trade(username, amount, duration, stock_cap="nifty50"):
     user = Users.query.filter_by(username=username).first()
 
+    amount = int(amount)
+    duration = int(duration)
 
     if user.current_balance < amount :
         """
@@ -104,8 +108,6 @@ def make_trade(username, amount, duration, stock_cap="nifty50"):
         """
         pass
 
-    amount = int(amount)
-    duration = int(duration)
 
     invest = get_profit_data(stock_cap.lower())
     portions = [amount * factor for factor in invest['probability']]
@@ -246,3 +248,50 @@ def reevaluation(app):
 
         db.session.commit()
         app_context.pop()
+
+
+
+def get_trade_info(user_id):
+    trades = Trade.query.filter_by(user_id=user_id).all()
+
+    data = []
+
+    for trade in trades:
+        temp = {}
+        temp['amount'] = trade.amount
+        temp['duration'] = trade.duration
+
+        temp['transactions'] = []
+        sett = []
+        tran_ids = [int(x.strip()) for x in trade.tran_id.split(' ')]
+        total_profit = 0
+        for id in tran_ids:
+            transaction = Transaction.query.filter_by(tran_id=id).first()
+
+            trans_temp = {}
+            company = transaction.Stock_name
+            sett.extend(company)
+            res = requests.get(stock_prediction_url + f'/get_current_data?company_name{company.upper()}=&&days=1')
+            current_price = 0
+            if res.status_code == 200:
+                res = res.json()
+                print(res)
+                current_price = res[company.upper()]['Close']
+            
+            trans_temp['current_price'] = current_price
+            trans_temp['company'] = company
+            trans_temp['buy_price'] = transaction.Price
+            trans_temp['quantity'] = transaction.quantity
+            trans_temp['action'] = transaction.buySell
+
+            
+            total_profit += (current_price - transaction.Price) * transaction.quantity
+
+            temp['transactions'].append(trans_temp)
+        temp['stock_count'] = len(set(sett))
+        temp['expected_profit'] = total_profit
+        data.append(temp)
+
+    return data
+            
+
