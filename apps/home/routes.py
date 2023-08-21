@@ -11,7 +11,7 @@ from .utils import get_all_stock_data, make_trade
 from .form import AddMoney,WithdrawMoney, TradeForm
 from flask_login import current_user
 from apps.authentication.models import Users
-from apps.home.models import Transaction
+from apps.home.models import Transaction, Trade
 from apps import db
 import json
 
@@ -36,10 +36,6 @@ def index():
 
     sorted_investments = dict(sorted(stock_investments.items(), key=lambda item: item[1], reverse=True))
 
-    # labels = list(stock_investments.keys())
-    # data = list(stock_investments.values())
-    # labels_json = json.dumps(labels)
-    # data_json = json.dumps(data)
     top_four = dict(list(sorted_investments.items())[:4])
     remaining = dict(list(sorted_investments.items())[4:])
 
@@ -53,7 +49,9 @@ def index():
     labels_json = json.dumps([item['label'] for item in chart_data])
     data_json = json.dumps([item['data'] for item in chart_data])
 
-    return render_template('home/index.html', transaction=transactions, labels_json=labels_json, data_json=data_json, total_investment=global_investment)
+    trade=Trade.query.all()
+
+    return render_template('home/index.html', transaction=transactions, labels_json=labels_json, data_json=data_json, total_investment=global_investment,trade=trade)
 
 @blueprint.route('/stocklist/nifty50')
 @login_required
@@ -114,9 +112,7 @@ def wallet():
         money = request.form["moneytoadd"]
         user_id = session["user_id"]
         username = session["user_name"]
-        print(f"money : {money}, {user_id}, {username}")
         user = Users.query.filter_by(id=user_id).first()
-        print(f"user :{user} , {type(user)} , {user.current_balance}")
         user.current_balance+= int(money)
         db.session.commit()
 
@@ -124,9 +120,7 @@ def wallet():
         money = request.form["moneytowithdraw"]
         user_id = session["user_id"]
         username = session["user_name"]
-        print(f"money : {money}, {user_id}, {username}")
         user = Users.query.filter_by(id=user_id).first()
-        print(f"user :{user} , {type(user)} , {user.current_balance}")
         if user.current_balance >= int(money):
             user.current_balance -= int(money)
             db.session.commit()
@@ -157,7 +151,7 @@ def create_trade():
         # print(f"category = {category}, amount = {amount}, duration = {duration}, uid = {uname}")
         make_trade(uname, amount, duration, stock_cap=category)
         
-        return redirect( url_for('home_blueprint.dashboard'))
+        return redirect( url_for('home_blueprint.index'))
         
         
     return render_template("home/tradeform.html", form=form)

@@ -67,9 +67,12 @@ def make_trade(username, amount, duration, stock_cap="nifty50"):
     """ Calling Model server to get prediction for top 10 companies which will be most profitable in coming 10 days 
         update function name from get_profit_data to the one implemented in model side
     """
+    user_amount = user.current_balance
     amount = int(amount)
     duration = int(duration)
-
+    if amount > user_amount:
+        print('insufficient balance in wallet')
+        return 
     invest = get_profit_data(stock_cap.lower())
     portions = [amount * factor for factor in invest['probability']]
     quantities = [cur_price/portion for cur_price, portion in zip(invest['curr_price'], portions)]

@@ -20,7 +20,7 @@
                   <div class="row">
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0">Total Investment</h5>
-                      <span class="h2 font-weight-bold mb-0">Rs.{{ total_investment }}</span>
+                      <span class="h2 font-weight-bold mb-0">Rs.{{ total_investment|float|round(2) }}</span>
                     </div>
                     <div class="col-auto">
                       <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
@@ -153,55 +153,46 @@
   <div class="col">
     <div class="card bg-default shadow">
       <div class="card-header bg-transparent border-0">
-        <h3 class="text-white mb-0">Transaction History</h3>
+        <h3 class="text-white mb-0">Trade History</h3>
       </div>
       <div class="table-responsive">
         <table class="table align-items-center table-dark table-flush">
           <thead class="thead-dark">
             <tr>
-              <th scope="col">Stock</th>
-              <th scope="col">Price</th>
-              <th scope="col">Quantity</th>
+              <th scope="col">Trade ID</th>
+              <th scope="col">Category</th>
+              <th scope="col">Duration</th>
               <th scope="col">Total Investment</th>
-              <th scope="col">Date and Time</th>
-              <th scope="col"> Transaction_ID</th>
             </tr>
           </thead>
           <tbody class="list">
-            {% for transaction in transaction %}
+            {% for trade in trade %}
             <tr>
               <th scope="row">
                 <div class="media align-items-center">
                   <div class="media-body">
-                    <span class="name mb-0 text-sm">{{transaction.Stock_name}}</span>
+                    <span class="name mb-0 text-sm">{{trade.trade_id}}</span>
                   </div>
                 </div>
               </th>
               <td>
                 <span class="badge badge-dot mr-4">
                   <i class="bg-warning"></i>
-                  <span class="status">Rs.{{transaction.Price}}</span>
+                  <span class="status">Rs.{{trade.category}}</span>
                 </span>
               </td>
               <td>
                 <span class="badge badge-dot mr-4">
                   <i class="bg-warning"></i>
-                  <span class="status">{{transaction.quantity}}</span>
+                  <span class="status">{{trade.duration}}</span>
                 </span>
               </td>
               <td>
                 <span class="badge badge-dot mr-4">
                   <i class="bg-warning"></i>
-                  <span class="status">{{transaction.quantity * transaction.Price}}</span>
+                  <span class="status">{{trade.amount}}</span>
                 </span>
               </td>
-              <td>
-                <div class="d-flex align-items-center">
-                  <span>{{transaction.date_time}}</span>
-                </div>
-                <td class="budget">
-                  {{ transaction.tran_id }}
-                 </td>
             </tr>
             {% endfor %}
           </tbody>
