@@ -180,7 +180,7 @@
               <td>
                 <span class="badge badge-dot mr-4">
                   <i lass="bg-warning"></i>
-                  <span class="status">Rs.{{trade.category}}</span>
+                  <span class="status">{{trade.category}}</span>
 
                 </span>
               </td>
@@ -196,7 +196,7 @@
                 <span class="badge badge-dot mr-4">
                   <i class="bg-warning"></i>
 
-                  <span class="status">{{trade.amount}}</span>
+                  <span class="status">Rs. {{trade.amount|float|round(2)}}</span>
 
                 </span>
               </td>
@@ -230,7 +230,7 @@
   var pieChart = new Chart(ctx, {
     type: 'pie',
     data: {
-      // labels: labels,
+      labels: labels,
       datasets: [{
         data: data,
         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50','#00008B'],

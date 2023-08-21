@@ -139,7 +139,7 @@ def make_trade(username, amount, duration, stock_cap="Nifty50"):
         user = Users.query.filter_by(username=username).first()
 
         
-        amount = int(amount)
+        amount = float(amount)
         duration = int(duration)
         
         if user.current_balance < amount :
@@ -151,16 +151,18 @@ def make_trade(username, amount, duration, stock_cap="Nifty50"):
             user.current_balance -= amount
 
         portions = [amount * factor for factor in invest['prob']]
-        quantities = [cur_price/portion for cur_price, portion in zip(invest['cur_price'], portions)]
+        quantities = [portion/float(cur_price) for cur_price, portion in zip(invest['cur_price'], portions)]
         i = 0
         print("port", portions)
         print("QUAN", quantities)
         print("CURPR", invest['cur_price'])
         print("PROB", invest['prob'])
+        print("portion", np.sum(portions))
+        print(amount)
         
         transaction_id = []
         for company in invest['comp']:
-            transaction = Transaction(uid = user.id, date_time = date.today(), Stock_name = company, buySell = 1, Price=portions[i], quantity = quantities[i])
+            transaction = Transaction(uid = user.id, date_time = date.today(), Stock_name = company, buySell = 1, buyprice=invest['cur_price'][i], Price=portions[i], quantity = quantities[i])
             db.session.add(transaction)
             db.session.flush()
             transaction_id.append(transaction.tran_id)
@@ -180,38 +182,6 @@ def make_trade(username, amount, duration, stock_cap="Nifty50"):
         print("here ", e)
         return render_template('home/page-500.html'), 500
 
-
-
-
-
-
-
-
-    """ Calling Model server to get prediction for top 10 companies which will be most profitable in coming 10 days 
-        update function name from get_profit_data to the one implemented in model side
-    """
-    user_amount = user.current_balance
-    amount = int(amount)
-    duration = int(duration)
-    if amount > user_amount:
-        print('insufficient balance in wallet')
-        return 
-    invest = get_profit_data(stock_cap.lower())
-    portions = [amount * factor for factor in invest['probability']]
-    quantities = [cur_price/portion for cur_price, portion in zip(invest['curr_price'], portions)]
-    i = 0
-
-    transaction_id = []
-    for company in invest['company']:
-        transaction = Transaction(uid = user.id, date_time = date.today(), Stock_name = company, buySell = 1, Price=portions[i], quantity = quantities[i])
-        db.session.add(transaction)
-        db.session.flush()
-        transaction_id.append(transaction.tran_id)
-        i += 1
-
-    print(transaction_id)
-    tran_string = " ".join([str(x) for x in transaction_id])
-    trade = Trade(user_id = user.id, tran_id = tran_string, category = stock_cap, duration = duration, amount = amount)
 
 def reevaluation(app):
     app_context = app.app_context()
@@ -386,13 +356,14 @@ def get_trade_info(user_id):
 
             trans_temp = {}
             company = transaction.Stock_name
-            sett.extend(company)
-            res = requests.get(stock_prediction_url + f'/get_current_data?company_name={company.upper()}&&days=1')
+            sett +=[company]
+            companystr = company.upper().replace('&', '%26')
+            res = requests.get(stock_prediction_url + f'/get_current_data?company_name={companystr}&&pdays=2')
             current_price = 0
             if res.status_code == 200:
                 response = res.json()
                 print(response)
-                current_price = response[company.upper()][0]['Close']
+                current_price = float(response[company.upper()][0]['Close'])
             
             trans_temp['current_price'] = current_price
             trans_temp['company'] = company
@@ -401,11 +372,13 @@ def get_trade_info(user_id):
             trans_temp['action'] = transaction.buySell
 
             
-            total_profit += (current_price - transaction.Price) * transaction.quantity
+            total_profit += (current_price) * transaction.quantity
+            print(current_price, transaction.quantity, (current_price) * transaction.quantity)
 
             temp['transactions'].append(trans_temp)
         temp['stock_count'] = len(set(sett))
         temp['expected_profit'] = total_profit
+       
         data.append(temp)
 
     return data

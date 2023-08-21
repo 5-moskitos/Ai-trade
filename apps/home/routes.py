@@ -31,7 +31,7 @@ def dashboard():
         price = transaction.Price
         quantity = transaction.quantity
         total_investment = price * quantity
-        global_investment += total_investment
+        global_investment += price
 
         if stock_name in stock_investments:
             stock_investments[stock_name] += total_investment
@@ -53,7 +53,6 @@ def dashboard():
     # Convert chart_data to JSON strings
     labels_json = json.dumps([item['label'] for item in chart_data])
     data_json = json.dumps([item['data'] for item in chart_data])
-
 
     trade=Trade.query.all()
 
@@ -209,7 +208,7 @@ def create_trade():
         # print(f"category = {category}, amount = {amount}, duration = {duration}, uid = {uname}")
         make_trade(uname, amount, duration, stock_cap=category)
         
-        return redirect( url_for('home_blueprint.index'))
+        return redirect( url_for('home_blueprint.dashboard'))
         
         
     return render_template("home/tradeform.html", form=form)
