@@ -140,19 +140,19 @@ margin-right: 100px;
               <td>
                 <span class="badge badge-dot mr-4">
                   <i class="bg-warning"></i>
-                  <span class="status">Rs.{{transaction.Price}}</span>
+                  <span class="status">Rs.{{transaction.Price|float|round(2)}}</span>
                 </span>
               </td>
               <td>
                 <span class="badge badge-dot mr-4">
                   <i class="bg-warning"></i>
-                  <span class="status">{{transaction.quantity}}</span>
+                  <span class="status">{{transaction.quantity|float|round(2)}}</span>
                 </span>
               </td>
               <td>
                 <span class="badge badge-dot mr-4">
                   <i class="bg-warning"></i>
-                  <span class="status">{{transaction.quantity * transaction.Price}}</span>
+                  <span class="status">{{(transaction.quantity * transaction.Price)|float|round(2)}}</span>
                 </span>
               </td>
               <td>

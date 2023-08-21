@@ -186,6 +186,33 @@ def make_trade(username, amount, duration, stock_cap="Nifty50"):
 
 
 
+
+    """ Calling Model server to get prediction for top 10 companies which will be most profitable in coming 10 days 
+        update function name from get_profit_data to the one implemented in model side
+    """
+    user_amount = user.current_balance
+    amount = int(amount)
+    duration = int(duration)
+    if amount > user_amount:
+        print('insufficient balance in wallet')
+        return 
+    invest = get_profit_data(stock_cap.lower())
+    portions = [amount * factor for factor in invest['probability']]
+    quantities = [cur_price/portion for cur_price, portion in zip(invest['curr_price'], portions)]
+    i = 0
+
+    transaction_id = []
+    for company in invest['company']:
+        transaction = Transaction(uid = user.id, date_time = date.today(), Stock_name = company, buySell = 1, Price=portions[i], quantity = quantities[i])
+        db.session.add(transaction)
+        db.session.flush()
+        transaction_id.append(transaction.tran_id)
+        i += 1
+
+    print(transaction_id)
+    tran_string = " ".join([str(x) for x in transaction_id])
+    trade = Trade(user_id = user.id, tran_id = tran_string, category = stock_cap, duration = duration, amount = amount)
+
 def reevaluation(app):
     app_context = app.app_context()
     app_context.push()
@@ -248,6 +275,7 @@ def reevaluation(app):
 
         for i in range(len(buy_price)):
             total_loss += ((buy_price[i]*quantity_bought[i]) - (curr_price[i]*quantity_bought[i]))
+
     
         tran_to_be_deleted = []
         new_inestment_amount = 0
