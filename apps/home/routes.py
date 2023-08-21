@@ -73,12 +73,12 @@ def stocklistn50():
         tosend = []
         for company, record in data.items():
             temp = {}
-            temp['current_price'] = record["past"][-1]["Close"]
+            temp['current_price'] = record["past"][0]["Close"]
             temp['company'] = company
             temp['future'] = record['future']
             temp['past'] = [x['Close'] for x in record['past'] ]
-            temp['pre_change_past'] = 100 * ((record["past"][-1]["Close"] - record["past"][-2]["Close"])/record["past"][-1]["Close"])
-            temp['pre_change_future'] = 100 * ((record["future"][0] - record["past"][-1]["Close"])/record["future"][0])
+            temp['pre_change_past'] = 100 * ((- record["past"][1]["Close"] + record["past"][0]["Close"])/record["past"][1]["Close"])
+            temp['pre_change_future'] = 100 * (( - record["past"][0]["Close"] + record["future"][0])/record["past"][0]["Close"])
             tosend.append(temp)
        
         return render_template("home/" + "stocklist.html", data=tosend, category="Nifty50")
