@@ -38,6 +38,7 @@ def dashboard():
         else:
             stock_investments[stock_name] = total_investment
 
+
     sorted_investments = dict(sorted(stock_investments.items(), key=lambda item: item[1], reverse=True))
 
     # labels = list(stock_investments.keys())
@@ -56,6 +57,7 @@ def dashboard():
     # Convert chart_data to JSON strings
     labels_json = json.dumps([item['label'] for item in chart_data])
     data_json = json.dumps([item['data'] for item in chart_data])
+
 
     return render_template('home/index.html', transaction=transactions, labels_json=labels_json, data_json=data_json, total_investment=global_investment)
 
@@ -102,8 +104,6 @@ def stocklistmc():
         if res.status_code == 200:
             data = res.json()
   
-        
-
         tosend = []
         for company, record in data.items():
             temp = {}
