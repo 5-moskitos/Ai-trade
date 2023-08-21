@@ -20,6 +20,7 @@
                   <div class="row">
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0">Total Investment</h5>
+
                       <span class="h2 font-weight-bold mb-0">Rs.{{ total_investment|float|round(2) }}</span>
                     </div>
                     <div class="col-auto">
@@ -120,6 +121,7 @@
                 </div>
               </div>
             </div>
+            
             <div class="card-body">
               <!-- Chart -->
               <div class="chart">
@@ -136,7 +138,7 @@
                 <div class="col">
                   <!-- Put pie chart instead of bar graph of investment--> 
                   <h6 class="text-uppercase text-muted ls-1 mb-1">Performance</h6>
-                  <h5 class="h3 mb-0">Total orders</h5>
+                  <h5 class="h3 mb-0">Total orders </h5>
                 </div>
               </div>
             </div>
@@ -177,20 +179,25 @@
               </th>
               <td>
                 <span class="badge badge-dot mr-4">
-                  <i class="bg-warning"></i>
+                  <i lass="bg-warning"></i>
                   <span class="status">Rs.{{trade.category}}</span>
+
                 </span>
               </td>
               <td>
                 <span class="badge badge-dot mr-4">
                   <i class="bg-warning"></i>
+
                   <span class="status">{{trade.duration}}</span>
+
                 </span>
               </td>
               <td>
                 <span class="badge badge-dot mr-4">
                   <i class="bg-warning"></i>
+
                   <span class="status">{{trade.amount}}</span>
+
                 </span>
               </td>
             </tr>
@@ -223,7 +230,7 @@
   var pieChart = new Chart(ctx, {
     type: 'pie',
     data: {
-      labels: labels,
+      // labels: labels,
       datasets: [{
         data: data,
         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50','#00008B'],
