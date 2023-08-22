@@ -7,8 +7,7 @@ from apps.home import blueprint
 from flask import Flask,render_template, request, session, redirect, url_for,flash
 from flask_login import login_required
 from jinja2 import TemplateNotFound
-
-from .utils import get_all_stock_data, make_trade, get_trade_info
+from .utils import make_trade, get_trade_info
 from .form import AddMoney,WithdrawMoney, TradeForm
 from flask_login import current_user
 from apps.authentication.models import Users
@@ -116,7 +115,7 @@ def stocklistn50():
 @blueprint.route('/stocklist/midCap')
 @login_required
 def stocklistmc():
-    url = stock_prediction_url + '/get_data_midcap_prediction?fdays=10&&pdays=100'
+    url = stock_prediction_url + '/get_data_midcap_prediction?fdays=10&&pdays=60'
     try:
         data = {}
         res = requests.get(url=url)
@@ -148,7 +147,7 @@ def stocklistmc():
 @blueprint.route('/stocklist/smallCap')
 @login_required
 def stocklistsc():
-    url = stock_prediction_url + '/get_data_smallcap_prediction?fdays=10&&pdays=100'
+    url = stock_prediction_url + '/get_data_smallcap_prediction?fdays=10&&pdays=60'
     try:
         data = {}
         res = requests.get(url=url)
