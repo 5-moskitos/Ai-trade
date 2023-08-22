@@ -8,6 +8,7 @@ class Transaction(db.Model):
     date_time = db.Column(db.DateTime, nullable=False)
     Stock_name = db.Column(db.String(64),nullable=False)
     buySell = db.Column(db.Integer,nullable=False)
+    buyprice = db.Column(db.Integer,nullable=False)
     Price = db.Column(db.Integer,nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     Trade=db.relationship('Trade',backref='transaction')
