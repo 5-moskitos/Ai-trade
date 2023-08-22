@@ -7,6 +7,7 @@ from apps.home import blueprint
 from flask import Flask,render_template, request, session, redirect, url_for,flash
 from flask_login import login_required
 from jinja2 import TemplateNotFound
+
 from .utils import get_all_stock_data, make_trade, get_trade_info
 from .form import AddMoney,WithdrawMoney, TradeForm
 from flask_login import current_user
