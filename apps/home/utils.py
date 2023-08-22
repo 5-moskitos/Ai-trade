@@ -14,61 +14,6 @@ import requests
 
 stock_prediction_url = 'http://localhost:8000'
 
-# def get_stock_data(stock_name):
-
-#     min_value = 100.0
-#     max_value = 200.0
-    
-#     current_price = 150.0 
-
-    
-#     past_30_days = [random.uniform(min_value, max_value) for _ in range(100)] # Replace with actual data
-
-    
-#     future_10_days = [random.uniform(min_value, max_value) for _ in range(10)]
-
-#     # Create a dictionary with the collected data
-#     stock_data = {
-#         "stockname": stock_name,
-#         "data": {
-#             "current_price": current_price,
-#             "past_30_days": past_30_days,
-#             "future_10_days": future_10_days
-#         }
-#     }
-
-    
-#     stock_data['pre_change_past'] = 100 * ((stock_data["data"]["current_price"] - stock_data["data"]["past_30_days"][-1])/stock_data["data"]["past_30_days"][-1])
-#     stock_data['pre_change_future'] = 100 * ((stock_data["data"]["future_10_days"][0] - stock_data["data"]["current_price"])/stock_data["data"]["future_10_days"][0])
-    
-
-#     return json.dumps(stock_data, indent=4)
-
-
-def get_all_stock_data(category):
-    with open('apps/stocks.json', 'r') as fp:
-        stock_names = json.load(fp)
-    
-    stock_names = stock_names[category]
-
-        
-
-    data = [json.loads(get_stock_data(stock)) for stock in stock_names]
-    return data
-
-# def get_profit_data(stock_cap):
-#     invest = {}
-#     with open('apps/stocks.json', 'r') as fp:
-#         stock_names = json.load(fp)
-    
-#     stock_names = stock_names[stock_cap][:10]
-
-#     invest['company'] = stock_names
-#     invest['probability'] = [random.uniform(0.01, 1) for _ in range(len(stock_names))] 
-#     invest["curr_price"] = [random.uniform(10, 1000) for _ in range(len(stock_names))]
-
-
-#     return invest
 
 def predicted_profit(username):
     user = Users.query.filter_by(username=username).first()
@@ -121,7 +66,7 @@ def make_trade(username, amount, duration, stock_cap="Nifty50"):
 
     cap = ""
     if stock_cap == "Nifty50":
-        cap = "Nifty_50"
+        cap = "NIFTY_50"
     elif stock_cap == "Small Cap":
         cap = "small_cap"
     else:
@@ -185,6 +130,12 @@ def make_trade(username, amount, duration, stock_cap="Nifty50"):
 def reevaluation(app):
     app_context = app.app_context()
     app_context.push()
+
+
+    ############# Calling end point at server to predict data for next 10 days and store ###########
+    url = stock_prediction_url + '/store_predictions'
+    requests.get(url = url)
+
 
     ############# Code for calling finetuning function to fine tune model everyday ###########
 
@@ -278,25 +229,22 @@ def reevaluation(app):
                 cap = "small_cap"
             else:
                 cap = "mid_cap"
-            # url = stock_prediction_url + f"/get_{trade.category}_sigmoid"
-            # try:
-            #     invest = {}
-            #     res = requests.get(url=url)
-            #     if res.status_code == 200:
-            #         invest = res.json()
-            # except TemplateNotFound:
-            #     return render_template('home/page-404.html'), 404
+            url = stock_prediction_url + f"/get_{cap}_sigmoid"
+            try:
+                invest = {}
+                res = requests.get(url=url)
+                if res.status_code == 200:
+                    invest = res.json()
+            except TemplateNotFound:
+                return render_template('home/page-404.html'), 404
 
-            # except Exception as e:
-            #     print("here ", e)
-            #     return render_template('home/page-500.html'), 500
+            except Exception as e:
+                print("here ", e)
+                return render_template('home/page-500.html'), 500
 
-
-            invest = get_profit_data(trade.category.lower())
-
-            company_new_invest = invest["company"]
-            curr_price_new_invest = invest["curr_price"]
-            probability = invest["probability"]
+            company_new_invest = invest["comp"]
+            curr_price_new_invest = invest["cur_price"]
+            probability = invest["prob"]
             
             sorted_combined_new_invest = sorted(list(zip(company_new_invest, curr_price_new_invest, probability)), key = lambda x: x[2])
             company_new_invest, curr_price_new_invest, probability = zip(* sorted_combined_new_invest)
