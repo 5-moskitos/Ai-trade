@@ -43,27 +43,27 @@ def dashboard():
 
     top_four = dict(list(sorted_investments.items())[:4])
     remaining = dict(list(sorted_investments.items())[4:])
-    
-    top = list(sorted_investments.items())[-1]
-    top = top[0]
-    top = top.replace('&', '%26')
-    url = f'http://localhost:8000/get_compant_prediction?pdays=60&&fdays=8&&company_name={top}'
-    
-    res = requests.get(url)
-    
     past = []
     future = []
-    if res.status_code == 200:
-        jsondata = res.json()
-        
-        future = jsondata[top]['future']
-        for re in jsondata[top]['past']:
-            past += [re['Close']]
+    if len(sorted_investments) > 0: 
+        top = list(sorted_investments.items())[-1]
+        top = top[0]
+        top = top.replace('&', '%26')
+        url = f'http://localhost:8000/get_compant_prediction?pdays=60&&fdays=8&&company_name={top}'
     
-    past = list(reversed(past))
-    past = json.dumps(past)
-    future = json.dumps(future)       
+        res = requests.get(url)
         
+        if res.status_code == 200:
+            jsondata = res.json()
+            
+            future = jsondata[top]['future']
+            for re in jsondata[top]['past']:
+                past += [re['Close']]
+        
+        past = list(reversed(past))
+        past = json.dumps(past)
+        future = json.dumps(future)       
+            
     remaining_total_investment = sum(remaining.values())
 
     # Create a list for the chart data
