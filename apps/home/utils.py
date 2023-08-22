@@ -367,9 +367,11 @@ def get_trade_info(user_id):
             
             trans_temp['current_price'] = current_price
             trans_temp['company'] = company
-            trans_temp['buy_price'] = transaction.Price
+            trans_temp['buy_price'] = transaction.buyprice
             trans_temp['quantity'] = transaction.quantity
             trans_temp['action'] = transaction.buySell
+            trans_temp['invest'] = transaction.Price
+            
 
             
             total_profit += (current_price) * transaction.quantity

@@ -191,7 +191,6 @@ def aitrade():
 
     user_id = session['user_id']
     data = get_trade_info(user_id=user_id)
-    
     return render_template("home/aitrade.html", data=data)
 
 @blueprint.route('/create_trade', methods=['POST', 'GET'])
