@@ -35,7 +35,7 @@ Migrate(app, db)
 
 scheduler = BackgroundScheduler()
 scheduler.start()
-ist_time = datetime.now(pytz.timezone('Asia/Kolkata')).replace(hour=16, minute=26, second=30)
+ist_time = datetime.now(pytz.timezone('Asia/Kolkata')).replace(hour=16, minute=0, second=0)
 
 
 if DEBUG:
