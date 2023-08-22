@@ -137,11 +137,12 @@
     data = data.replace(/&#34;/g, '"');
     data  = JSON.parse(data)
     
-    console.log(data)
     
     data.forEach(function(record){
       var eid = record['company'].replace('&amp;', '&')  
-        console.log(record['past'])
+        
+        var future = Array.from({ length: 60 }, () => null).concat(record['future'])
+        future[59] = record['past'][59]
         var element = document.getElementById(eid);
         var ctx = element.getContext('2d');
         var myChart = new Chart(ctx, {
@@ -149,15 +150,15 @@
             data: {
                 labels: [...Array(68).keys()].map(num => num + 1),
                 datasets: [{
-                    label: 'Stock Price',
+                    label: 'Past Prices',
                     data: record['past'],
                     borderColor: 'rgb(75, 192, 192)',
                     fill: true,
                     backgroundColor: 'rgba(75, 192, 192, 0.2)'
                 },
                 {
-                  label: 'Stock Price',
-                  data: Array.from({ length: 60 }, () => null).concat(record['future']),
+                  label: 'Prediction',
+                  data: future,
                   borderColor: 'rgba(255, 165, 0, 1)',
                   fill: true,
                   backgroundColor: 'rgba(255, 165, 0, 0.2)'

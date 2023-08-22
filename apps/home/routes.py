@@ -60,6 +60,7 @@ def dashboard():
         for re in jsondata[top]['past']:
             past += [re['Close']]
     
+    past = list(reversed(past))
     past = json.dumps(past)
     future = json.dumps(future)       
         

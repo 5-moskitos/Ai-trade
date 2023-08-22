@@ -93,40 +93,24 @@
 
     <!-- Page content -->
     <div class="container-fluid mt--6">
-      <div class="row">
+      <div class="row mb-5">
         <div class="col-xl-8">
-          <div class="card bg-default">
+          <div class="card bg-default" style="height: 100%">
             <div class="card-header bg-transparent">
               <div class="row align-items-center">
                 <div class="col">
                   <h6 class="text-light text-uppercase ls-1 mb-1">Overview</h6>
-                  <h5 class="h3 text-white mb-0">Sales value</h5>
+                  <h5 class="h3 text-white mb-0">Trend</h5>
                 </div>
-                <div class="col">
-                  <ul class="nav nav-pills justify-content-end">
-                    <!-- retreive past data and prediction values nad put those point in chart -->
-                    <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-sales-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 60, 60]}]}}' data-prefix="$" data-suffix="k">
-                      <a href="#" class="nav-link py-2 px-3 active" data-toggle="tab">
-                        <span class="d-none d-md-block">Month</span>
-                        <span class="d-md-none">M</span>
-                      </a>
-                    </li>
-                    <li class="nav-item" data-toggle="chart" data-target="#chart-sales-dark" data-update='{"data":{"datasets":[{"data":[0, 20, 5, 25, 10, 30, 15, 40, 40]}]}}' data-prefix="$" data-suffix="k">
-                      <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
-                        <span class="d-none d-md-block">Week</span>
-                        <span class="d-md-none">W</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
+                
               </div>
             </div>
             
-            <div class="card-body">
+            <div class="card-body" style="height: 100%;">
               <!-- Chart -->
               <div class="chart">
                 <!-- Chart wrapper -->
-                <canvas id="chart-sales-dark" class="chart-canvas"></canvas>
+                <canvas id="indexgraph" class="chart-canvas"></canvas>
               </div>
             </div>
           </div>
@@ -247,25 +231,26 @@
     past  = JSON.parse(past)
     future  = JSON.parse(future)
     
-    console.log(past)
-    console.log(future)
+    future = Array.from({ length: 60 }, () => null).concat(future)
+    future[59] = past[59]
+
     
-        var element = document.getElementById(eid);
+        var element = document.getElementById("indexgraph");
         var ctx = element.getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: [...Array(68).keys()].map(num => num + 1),
                 datasets: [{
-                    label: 'Stock Price',
+                    label: labels[0],
                     data: past,
                     borderColor: 'rgb(75, 192, 192)',
                     fill: true,
                     backgroundColor: 'rgba(75, 192, 192, 0.2)'
                 },
                 {
-                  label: 'Stock Price',
-                  data: Array.from({ length: 60 }, () => null).concat(future),
+                  label: 'Pridictions',
+                  data: future,
                   borderColor: 'rgba(255, 165, 0, 1)',
                   fill: true,
                   backgroundColor: 'rgba(255, 165, 0, 0.2)'
